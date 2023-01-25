@@ -188,7 +188,7 @@ contract L2StandardBridge is StandardBridge, Semver {
     }
 
     // The following internal functions override the virtual functions defined in the parent
-    // StandarBridge contract, to ensure that the legacy events are emitted along with the
+    // StandardBridge contract, this ensures that the legacy events can be emitted along with the
     // newer events, for backwards compatibility.
 
     /**
@@ -200,7 +200,6 @@ contract L2StandardBridge is StandardBridge, Semver {
         uint256 _amount,
         bytes memory _extraData
     ) internal override {
-        emit ETHBridgeInitiated(_from, _to, _amount, _extraData);
         emit WithdrawalInitiated(
             address(0),
             Predeploys.LEGACY_ERC20_ETH,
@@ -220,7 +219,6 @@ contract L2StandardBridge is StandardBridge, Semver {
         uint256 _amount,
         bytes memory _extraData
     ) internal override {
-        emit ETHBridgeFinalized(_from, _to, _amount, _extraData);
         emit DepositFinalized(
             address(0),
             Predeploys.LEGACY_ERC20_ETH,
@@ -242,7 +240,6 @@ contract L2StandardBridge is StandardBridge, Semver {
         uint256 _amount,
         bytes memory _extraData
     ) internal override {
-        emit ERC20BridgeInitiated(_localToken, _remoteToken, _from, _to, _amount, _extraData);
         emit WithdrawalInitiated(_remoteToken, _localToken, _from, _to, _amount, _extraData);
     }
 
@@ -257,7 +254,6 @@ contract L2StandardBridge is StandardBridge, Semver {
         uint256 _amount,
         bytes memory _extraData
     ) internal override {
-        emit ERC20BridgeFinalized(_localToken, _remoteToken, _from, _to, _amount, _extraData);
         emit DepositFinalized(_remoteToken, _localToken, _from, _to, _amount, _extraData);
     }
 }

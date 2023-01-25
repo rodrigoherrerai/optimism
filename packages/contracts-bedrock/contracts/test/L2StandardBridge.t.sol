@@ -58,10 +58,10 @@ contract L2StandardBridge_Test is Bridge_Initializer {
         );
 
         vm.expectEmit(true, true, true, true);
-        emit ETHBridgeInitiated(alice, alice, 100, hex"");
+        emit WithdrawalInitiated(address(0), Predeploys.LEGACY_ERC20_ETH, alice, alice, 100, hex"");
 
         vm.expectEmit(true, true, true, true);
-        emit WithdrawalInitiated(address(0), Predeploys.LEGACY_ERC20_ETH, alice, alice, 100, hex"");
+        emit ETHBridgeInitiated(alice, alice, 100, hex"");
 
         // L2ToL1MessagePasser will emit a MessagePassed event
         vm.expectEmit(true, true, true, true);
@@ -210,10 +210,10 @@ contract PreBridgeERC20 is Bridge_Initializer {
         );
 
         vm.expectEmit(true, true, true, true);
-        emit ERC20BridgeInitiated(address(L2Token), address(L1Token), alice, alice, 100, hex"");
+        emit WithdrawalInitiated(address(L1Token), address(L2Token), alice, alice, 100, hex"");
 
         vm.expectEmit(true, true, true, true);
-        emit WithdrawalInitiated(address(L1Token), address(L2Token), alice, alice, 100, hex"");
+        emit ERC20BridgeInitiated(address(L2Token), address(L1Token), alice, alice, 100, hex"");
 
         vm.expectEmit(true, true, true, true);
         emit MessagePassed(
@@ -308,10 +308,10 @@ contract PreBridgeERC20To is Bridge_Initializer {
         );
 
         vm.expectEmit(true, true, true, true);
-        emit ERC20BridgeInitiated(address(L2Token), address(L1Token), alice, bob, 100, hex"");
+        emit WithdrawalInitiated(address(L1Token), address(L2Token), alice, bob, 100, hex"");
 
         vm.expectEmit(true, true, true, true);
-        emit WithdrawalInitiated(address(L1Token), address(L2Token), alice, bob, 100, hex"");
+        emit ERC20BridgeInitiated(address(L2Token), address(L1Token), alice, bob, 100, hex"");
 
         vm.expectEmit(true, true, true, true);
         emit MessagePassed(
@@ -431,10 +431,10 @@ contract L2StandardBridge_Bridge_Test is Bridge_Initializer {
 
         // Should emit both the bedrock and legacy events
         vm.expectEmit(true, true, true, true, address(L2Bridge));
-        emit ERC20BridgeFinalized(address(L2Token), address(L1Token), alice, alice, 100, hex"");
+        emit DepositFinalized(address(L1Token), address(L2Token), alice, alice, 100, hex"");
 
         vm.expectEmit(true, true, true, true, address(L2Bridge));
-        emit DepositFinalized(address(L1Token), address(L2Token), alice, alice, 100, hex"");
+        emit ERC20BridgeFinalized(address(L2Token), address(L1Token), alice, alice, 100, hex"");
 
         vm.prank(address(L2Messenger));
         L2Bridge.finalizeDeposit(address(L1Token), address(L2Token), alice, alice, 100, hex"");
@@ -449,6 +449,9 @@ contract L2StandardBridge_Bridge_Test is Bridge_Initializer {
 
         // Should emit both the bedrock and legacy events
         vm.expectEmit(true, true, true, true, address(L2Bridge));
+        emit DepositFinalized(address(L1Token), address(L2Token), alice, alice, 100, hex"");
+
+        vm.expectEmit(true, true, true, true, address(L2Bridge));
         emit ERC20BridgeFinalized(
             address(L2Token), // localToken
             address(L1Token), // remoteToken
@@ -457,9 +460,6 @@ contract L2StandardBridge_Bridge_Test is Bridge_Initializer {
             100,
             hex""
         );
-
-        vm.expectEmit(true, true, true, true, address(L2Bridge));
-        emit DepositFinalized(address(L1Token), address(L2Token), alice, alice, 100, hex"");
 
         vm.prank(address(L2Messenger));
         L2Bridge.finalizeDeposit(address(L1Token), address(L2Token), alice, alice, 100, hex"");

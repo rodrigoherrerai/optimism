@@ -301,7 +301,10 @@ abstract contract StandardBridge {
         require(_to != address(this), "StandardBridge: cannot send to self");
         require(_to != address(MESSENGER), "StandardBridge: cannot send to messenger");
 
+        // If the _emit function is overri theden it will emit legacy events before emitting the
+        // current Bridge event.
         _emitETHBridgeFinalized(_from, _to, _amount, _extraData);
+        emit ETHBridgeFinalized(_from, _to, _amount, _extraData);
 
         bool success = SafeCall.call(_to, gasleft(), _amount, hex"");
         require(success, "StandardBridge: ETH transfer failed");
@@ -340,7 +343,10 @@ abstract contract StandardBridge {
             IERC20(_localToken).safeTransfer(_to, _amount);
         }
 
+        // If the _emit function is overriden, it will emit the legacy event before emitting the
+        // current Bridge event.
         _emitERC20BridgeFinalized(_localToken, _remoteToken, _from, _to, _amount, _extraData);
+        emit ERC20BridgeFinalized(_localToken, _remoteToken, _from, _to, _amount, _extraData);
     }
 
     /**
@@ -366,7 +372,10 @@ abstract contract StandardBridge {
             "StandardBridge: bridging ETH must include sufficient ETH value"
         );
 
+        // If the _emit function is overri theden it will emit legacy events before emitting the
+        // current Bridge event.
         _emitETHBridgeInitiated(_from, _to, _amount, _extraData);
+        emit ETHBridgeInitiated(_from, _to, _amount, _extraData);
 
         MESSENGER.sendMessage{ value: _amount }(
             address(OTHER_BRIDGE),
@@ -414,7 +423,10 @@ abstract contract StandardBridge {
             deposits[_localToken][_remoteToken] = deposits[_localToken][_remoteToken] + _amount;
         }
 
+        // If the _emit function is overriden, it will emit the legacy event before emitting the
+        // current Bridge event.
         _emitERC20BridgeInitiated(_localToken, _remoteToken, _from, _to, _amount, _extraData);
+        emit ERC20BridgeInitiated(_localToken, _remoteToken, _from, _to, _amount, _extraData);
 
         MESSENGER.sendMessage(
             address(OTHER_BRIDGE),
@@ -464,8 +476,9 @@ abstract contract StandardBridge {
         return _otherToken == OptimismMintableERC20(_mintableToken).l1Token();
     }
 
-    /** @notice Emits the ETHBridgeInitiated event and if necessary the appropriate legacy event
-     *          when an ETH bridge is finalized on this chain.
+    /**
+     * @notice By default this function does nothing, but can be overriden if necessary in order to
+     *         emit the appropriate legacy event when an ETH bridge is finalized on this chain.
      *
      * @param _from      Address of the sender.
      * @param _to        Address of the receiver.
@@ -477,13 +490,11 @@ abstract contract StandardBridge {
         address _to,
         uint256 _amount,
         bytes memory _extraData
-    ) internal virtual {
-        emit ETHBridgeInitiated(_from, _to, _amount, _extraData);
-    }
+    ) internal virtual {}
 
     /**
-     * @notice Emits the ETHBridgeFinalized and if necessary the appropriate legacy event when an
-     *         ETH bridge is finalized on this chain.
+     * @notice By default this function does nothing, but can be overriden if necessary in order to
+     *         emit the appropriate legacy event when an ETH bridge is finalized on this chain.
      *
      * @param _from      Address of the sender.
      * @param _to        Address of the receiver.
@@ -495,13 +506,11 @@ abstract contract StandardBridge {
         address _to,
         uint256 _amount,
         bytes memory _extraData
-    ) internal virtual {
-        emit ETHBridgeFinalized(_from, _to, _amount, _extraData);
-    }
+    ) internal virtual {}
 
     /**
-     * @notice Emits the ERC20BridgeInitiated event and if necessary the appropriate legacy
-     *         event when an ERC20 bridge is initiated to the other chain.
+     * @notice By default this function does nothing, but can be overriden if necessary in order to
+     *         emit the appropriate legacy event when an ETH bridge is finalized on this chain.
      *
      * @param _localToken  Address of the ERC20 on this chain.
      * @param _remoteToken Address of the ERC20 on the remote chain.
@@ -517,13 +526,11 @@ abstract contract StandardBridge {
         address _to,
         uint256 _amount,
         bytes memory _extraData
-    ) internal virtual {
-        emit ERC20BridgeInitiated(_localToken, _remoteToken, _from, _to, _amount, _extraData);
-    }
+    ) internal virtual {}
 
     /**
-     * @notice Emits the ERC20BridgeFinalized event and if necessary the appropriate legacy
-     *         event when an ERC20 bridge is initiated to the other chain.
+     * @notice By default this function does nothing, but can be overriden if necessary in order to
+     *         emit the appropriate legacy event when an ETH bridge is finalized on this chain.
      *
      * @param _localToken  Address of the ERC20 on this chain.
      * @param _remoteToken Address of the ERC20 on the remote chain.
@@ -539,7 +546,5 @@ abstract contract StandardBridge {
         address _to,
         uint256 _amount,
         bytes memory _extraData
-    ) internal virtual {
-        emit ERC20BridgeFinalized(_remoteToken, _localToken, _from, _to, _amount, _extraData);
-    }
+    ) internal virtual {}
 }
